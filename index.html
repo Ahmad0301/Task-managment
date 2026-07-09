@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>task management system</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Task Management System </h1>
+<div class="layout">
+
+    <div class="left-panel">
+        <h2>Add New Task</h2>
+        <label for="task">Title</label>
+        <input type="text" id="title" placeholder="Add task here " maxlength="100">
+        
+        <label for="textarea">Description</label>
+        <textarea id="description" placeholder="enter discription"></textarea>
+        
+        <label for="priority" >Priority</label>
+        <select id="priority">
+            <option value="high">🔴 High</option>
+                <option value="medium">🟡 Medium</option>
+                <option value="low">🟢 Low</option>
+        </select>   
+        
+        <label for="dueDate">Due Date</label>
+        <input type="date"id="dueDate"><br>
+        
+        <button id="addTask">
+             ➕ Add Task
+        </button><br>
+    </div>
+
+    <div class="right-panel">
+        <h2>Tasks</h2><br>
+        
+        <div id="taskContainer">
+           
+        </div>
+
+        
+
+    </div>
+
+</div>
+        <div>
+        
+        
+        <script src="script.js"></script>
+    </body>
+</html>
