@@ -72,6 +72,7 @@ function displayTasks() {
 
     return;
   }
+  //filter
   let filteredTasks = [...tasks];
   const searchText = searchInput.value.toLowerCase();
 
@@ -82,6 +83,7 @@ filteredTasks = filteredTasks.filter(task =>
     task.description.toLowerCase().includes(searchText)
 
 );
+
 
 if(currentFilter === "completed"){
 
@@ -103,6 +105,32 @@ if(currentFilter === "pending"){
     if (task.completed) {
       taskCard.classList.add("completed");
     }
+
+    const filterButtons = document.querySelectorAll(".filter-btn");
+
+filterButtons.forEach(function(button){
+
+    button.addEventListener("click", function(){
+
+        // Remove active class
+        filterButtons.forEach(function(btn){
+
+            btn.classList.remove("active");
+
+        });
+
+        // Highlight clicked button
+        this.classList.add("active");
+
+        // Save selected filter
+        currentFilter = this.dataset.filter;
+
+        // Refresh task list
+        displayTasks();
+
+    });
+
+});
 
     taskCard.innerHTML = `
 
