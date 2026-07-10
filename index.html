@@ -15,6 +15,7 @@
         <h2>Add New Task</h2>
         <label for="task">Title</label>
         <input type="text" id="title" placeholder="Add task here " maxlength="100">
+        <small id="titleError" class="error-message"></small>
         
         <label for="textarea">Description</label>
         <textarea id="description" placeholder="enter discription"></textarea>
@@ -45,6 +46,18 @@
         id="searchInput"
         placeholder="🔍 Search task..."
     >
+
+     <select id="sortTasks">
+            
+            <option value="newest">Newest</option>
+
+            <option value="oldest">Oldest</option>
+
+            <option value="priority">Priority</option>
+
+            <option value="date">Due Date</option>
+
+        </select>
 </div>
 
 <div class="filters">

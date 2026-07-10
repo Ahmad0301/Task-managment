@@ -9,6 +9,8 @@ const dueDateInput = document.getElementById("dueDate");
 const searchInput = document.getElementById("searchInput");
 const addTaskButton = document.getElementById("addTask");
 const taskContainer = document.getElementById("taskContainer");
+const sortTasks = document.getElementById("sortTasks");
+const titleError = document.getElementById("titleError");
 
 // Variables
 
@@ -26,9 +28,15 @@ addTaskButton.addEventListener("click", function () {
   const dueDate = dueDateInput.value;
 
   if (title === "") {
-    alert("Please enter a task title.");
+
+    titleError.textContent = "⚠ Task title is required.";
+
+    titleInput.focus();
+
     return;
-  }
+
+}
+titleError.textContent = "";
 
   const task = {
     title,
@@ -50,7 +58,7 @@ addTaskButton.addEventListener("click", function () {
   }
   // Add New Task
   else {
-    tasks.push(task);
+    tasks.unshift(task);
   }
   saveTasks();
   clearForm();
@@ -97,7 +105,43 @@ if(currentFilter === "pending"){
 
 }
 
-  filteredTasks.forEach((task, index) => {
+ if (sortTasks.value === "oldest") {
+
+        filteredTasks.reverse();
+
+    }
+
+    else if (sortTasks.value === "priority") {
+
+        const priorityOrder = {
+            high: 1,
+            medium: 2,
+            low: 3
+        };
+
+        filteredTasks.sort((a, b) => {
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+        });
+
+    }
+
+    else if (sortTasks.value === "date") {
+
+        filteredTasks.sort((a, b) => {
+
+            const dateA = a.dueDate || "9999-12-31";
+            const dateB = b.dueDate || "9999-12-31";
+
+            return new Date(dateA) - new Date(dateB);
+
+        });
+
+    }
+
+
+  filteredTasks.forEach((task) => {
+
+    const originalIndex = tasks.indexOf(task);
     const taskCard = document.createElement("div");
 
     taskCard.className = "task";
@@ -106,31 +150,9 @@ if(currentFilter === "pending"){
       taskCard.classList.add("completed");
     }
 
-    const filterButtons = document.querySelectorAll(".filter-btn");
+    
 
-filterButtons.forEach(function(button){
-
-    button.addEventListener("click", function(){
-
-        // Remove active class
-        filterButtons.forEach(function(btn){
-
-            btn.classList.remove("active");
-
-        });
-
-        // Highlight clicked button
-        this.classList.add("active");
-
-        // Save selected filter
-        currentFilter = this.dataset.filter;
-
-        // Refresh task list
-        displayTasks();
-
-    });
-
-});
+    
 
     taskCard.innerHTML = `
 
@@ -162,15 +184,15 @@ filterButtons.forEach(function(button){
 
             <div class="task-buttons">
 
-                <button class="action-btn edit-btn" data-index="${index}">
+                <button class="action-btn edit-btn" data-index="${originalIndex}">
                     ✏
                 </button>
 
-                <button class="action-btn delete-btn" data-index="${index}">
+                <button class="action-btn delete-btn" data-index="${originalIndex}">
                     🗑
                 </button>
 
-                <button class="action-btn complete-btn" data-index="${index}">
+                <button class="action-btn complete-btn" data-index="${originalIndex}">
                     ${task.completed ? "↩" : "✓"}
                 </button>
 
@@ -183,56 +205,10 @@ filterButtons.forEach(function(button){
     taskContainer.appendChild(taskCard);
   });
 
-  addEventListeners();
+
 }
 
-// Event Listeners
 
-function addEventListeners() {
-  // DELETE
-
-  document.querySelectorAll(".delete-btn").forEach((button) => {
-    button.addEventListener("click", function () {
-      const index = this.dataset.index;
-
-      tasks.splice(index, 1);
-      saveTasks();
-      displayTasks();
-    });
-  });
-
-  // COMPLETE
-
-  document.querySelectorAll(".complete-btn").forEach((button) => {
-    button.addEventListener("click", function () {
-      const index = this.dataset.index;
-
-      tasks[index].completed = !tasks[index].completed;
-      saveTasks();
-      displayTasks();
-    });
-  });
-
-  // EDIT
-
-  document.querySelectorAll(".edit-btn").forEach((button) => {
-    button.addEventListener("click", function () {
-      const index = this.dataset.index;
-
-      titleInput.value = tasks[index].title;
-
-      descriptionInput.value = tasks[index].description;
-
-      priorityInput.value = tasks[index].priority;
-
-      dueDateInput.value = tasks[index].dueDate;
-
-      editIndex = index;
-
-      addTaskButton.textContent = "Update Task";
-    });
-  });
-}
 
 // Clear Form
 
@@ -257,6 +233,88 @@ function loadTasks() {
 }
 
 searchInput.addEventListener("input", function(){
+
+    displayTasks();
+
+});
+const filterButtons = document.querySelectorAll(".filter-btn");
+
+filterButtons.forEach(function(button){
+
+    button.addEventListener("click", function(){
+
+        // Remove active class
+        filterButtons.forEach(function(btn){
+
+            btn.classList.remove("active");
+
+        });
+
+        // Highlight clicked button
+        this.classList.add("active");
+
+        // Save selected filter
+        currentFilter = this.dataset.filter;
+
+        // Refresh task list
+        displayTasks();
+
+    });
+
+});
+// Event Listeners
+
+
+taskContainer.addEventListener("click", function (event) {
+
+    const button = event.target;
+
+    if (!button.dataset.index) return;
+
+    const index = Number(button.dataset.index);
+
+    // Delete
+    if (button.classList.contains("delete-btn")) {
+
+        tasks.splice(index, 1);
+
+        saveTasks();
+
+        displayTasks();
+
+    }
+
+    // Complete
+    else if (button.classList.contains("complete-btn")) {
+
+        tasks[index].completed = !tasks[index].completed;
+
+        saveTasks();
+
+        displayTasks();
+
+    }
+
+    // Edit
+    else if (button.classList.contains("edit-btn")) {
+
+        titleInput.value = tasks[index].title;
+
+        descriptionInput.value = tasks[index].description;
+
+        priorityInput.value = tasks[index].priority;
+
+        dueDateInput.value = tasks[index].dueDate;
+
+        editIndex = index;
+
+        addTaskButton.textContent = "Update Task";
+
+    }
+
+});
+
+sortTasks.addEventListener("change", function(){
 
     displayTasks();
 
