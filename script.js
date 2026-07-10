@@ -2,7 +2,6 @@ console.log("JavaScript Connected");
 
 // Get Elements
 
-
 const titleInput = document.getElementById("title");
 const descriptionInput = document.getElementById("description");
 const priorityInput = document.getElementById("priority");
@@ -10,7 +9,6 @@ const dueDateInput = document.getElementById("dueDate");
 
 const addTaskButton = document.getElementById("addTask");
 const taskContainer = document.getElementById("taskContainer");
-
 
 // Variables
 
@@ -20,78 +18,69 @@ let editIndex = -1;
 // Add / Update Task
 
 addTaskButton.addEventListener("click", function () {
+  const title = titleInput.value.trim();
+  const description = descriptionInput.value.trim();
+  const priority = priorityInput.value;
+  const dueDate = dueDateInput.value;
 
-    const title = titleInput.value.trim();
-    const description = descriptionInput.value.trim();
-    const priority = priorityInput.value;
-    const dueDate = dueDateInput.value;
+  if (title === "") {
+    alert("Please enter a task title.");
+    return;
+  }
 
-    if (title === "") {
-        alert("Please enter a task title.");
-        return;
-    }
+  const task = {
+    title,
+    description,
+    priority,
+    dueDate,
+    completed: false,
+  };
 
-    const task = {
-        title,
-        description,
-        priority,
-        dueDate,
-        completed: false
-    };
+  // Update Existing Task
+  if (editIndex !== -1) {
+    task.completed = tasks[editIndex].completed;
 
-    // Update Existing Task
-    if (editIndex !== -1) {
+    tasks[editIndex] = task;
 
-        task.completed = tasks[editIndex].completed;
+    editIndex = -1;
 
-        tasks[editIndex] = task;
-
-        editIndex = -1;
-
-        addTaskButton.textContent = "Add Task";
-
-    }
-    // Add New Task
-    else {
-
-        tasks.push(task);
-
-    }
-    saveTasks();
-    clearForm();
-    displayTasks();
-
+    addTaskButton.textContent = "Add Task";
+  }
+  // Add New Task
+  else {
+    tasks.push(task);
+  }
+  saveTasks();
+  clearForm();
+  displayTasks();
 });
 
 // Display Tasks
 
 function displayTasks() {
+  taskContainer.innerHTML = "";
 
-    taskContainer.innerHTML = "";
-
-    if (tasks.length === 0) {
-
-        taskContainer.innerHTML = `
+  if (tasks.length === 0) {
+    taskContainer.innerHTML = `
             <div class="empty-state">
-                <h2>📋 No Tasks Yet</h2>
+                <h2> No Tasks Yet</h2>
                 <p>Create your first task.</p>
             </div>
         `;
 
-        return;
+    return;
+  }
+
+  tasks.forEach((task, index) => {
+    const taskCard = document.createElement("div");
+
+    taskCard.className = "task";
+
+    if (task.completed) {
+      taskCard.classList.add("completed");
     }
 
-    tasks.forEach((task, index) => {
-
-        const taskCard = document.createElement("div");
-
-        taskCard.className = "task";
-
-        if (task.completed) {
-            taskCard.classList.add("completed");
-        }
-
-        taskCard.innerHTML = `
+    taskCard.innerHTML = `
 
         <div class="task-row1">
 
@@ -130,11 +119,7 @@ function displayTasks() {
                 </button>
 
                 <button class="action-btn complete-btn" data-index="${index}">
-                    ${
-                        task.completed
-                        ? "↩"
-                        : "✓"
-                    }
+                    ${task.completed ? "↩" : "✓"}
                 </button>
 
             </div>
@@ -143,104 +128,80 @@ function displayTasks() {
 
         `;
 
-        taskContainer.appendChild(taskCard);
+    taskContainer.appendChild(taskCard);
+  });
 
-    });
-
-    addEventListeners();
-
+  addEventListeners();
 }
 
 // Event Listeners
 
 function addEventListeners() {
+  // DELETE
 
-    // DELETE
+  document.querySelectorAll(".delete-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const index = this.dataset.index;
 
-    document.querySelectorAll(".delete-btn").forEach(button => {
-
-        button.addEventListener("click", function () {
-
-            const index = this.dataset.index;
-
-            tasks.splice(index, 1);
-            saveTasks();
-            displayTasks();
-
-        });
-
+      tasks.splice(index, 1);
+      saveTasks();
+      displayTasks();
     });
+  });
 
-    // COMPLETE
+  // COMPLETE
 
-    document.querySelectorAll(".complete-btn").forEach(button => {
+  document.querySelectorAll(".complete-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const index = this.dataset.index;
 
-        button.addEventListener("click", function () {
-
-            const index = this.dataset.index;
-
-            tasks[index].completed = !tasks[index].completed;
-            saveTasks();
-            displayTasks();
-
-        });
-
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks();
+      displayTasks();
     });
+  });
 
-    // EDIT
+  // EDIT
 
-    document.querySelectorAll(".edit-btn").forEach(button => {
+  document.querySelectorAll(".edit-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const index = this.dataset.index;
 
-        button.addEventListener("click", function () {
+      titleInput.value = tasks[index].title;
 
-            const index = this.dataset.index;
+      descriptionInput.value = tasks[index].description;
 
-            titleInput.value = tasks[index].title;
+      priorityInput.value = tasks[index].priority;
 
-            descriptionInput.value = tasks[index].description;
+      dueDateInput.value = tasks[index].dueDate;
 
-            priorityInput.value = tasks[index].priority;
+      editIndex = index;
 
-            dueDateInput.value = tasks[index].dueDate;
-
-            editIndex = index;
-
-            addTaskButton.textContent = "Update Task";
-
-        });
-
+      addTaskButton.textContent = "Update Task";
     });
-
+  });
 }
 
 // Clear Form
 
 function clearForm() {
+  titleInput.value = "";
 
-    titleInput.value = "";
+  descriptionInput.value = "";
 
-    descriptionInput.value = "";
+  priorityInput.value = "medium";
 
-    priorityInput.value = "medium";
-
-    dueDateInput.value = "";
-
+  dueDateInput.value = "";
 }
 function saveTasks() {
-
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 function loadTasks() {
+  const savedTasks = localStorage.getItem("tasks");
 
-    const savedTasks = localStorage.getItem("tasks");
-
-    if (savedTasks) {
-
-        tasks.push(...JSON.parse(savedTasks));
-
-    }
-
+  if (savedTasks) {
+    tasks.push(...JSON.parse(savedTasks));
+  }
 }
 // Initial Load
 loadTasks();
