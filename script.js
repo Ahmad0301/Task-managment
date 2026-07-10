@@ -6,7 +6,7 @@ const titleInput = document.getElementById("title");
 const descriptionInput = document.getElementById("description");
 const priorityInput = document.getElementById("priority");
 const dueDateInput = document.getElementById("dueDate");
-
+const searchInput = document.getElementById("searchInput");
 const addTaskButton = document.getElementById("addTask");
 const taskContainer = document.getElementById("taskContainer");
 
@@ -14,6 +14,8 @@ const taskContainer = document.getElementById("taskContainer");
 
 const tasks = [];
 let editIndex = -1;
+let currentFilter = "all";
+
 
 // Add / Update Task
 
@@ -70,8 +72,30 @@ function displayTasks() {
 
     return;
   }
+  let filteredTasks = [...tasks];
+  const searchText = searchInput.value.toLowerCase();
 
-  tasks.forEach((task, index) => {
+filteredTasks = filteredTasks.filter(task =>
+
+    task.title.toLowerCase().includes(searchText) ||
+
+    task.description.toLowerCase().includes(searchText)
+
+);
+
+if(currentFilter === "completed"){
+
+    filteredTasks = filteredTasks.filter(task => task.completed);
+
+}
+
+if(currentFilter === "pending"){
+
+    filteredTasks = filteredTasks.filter(task => !task.completed);
+
+}
+
+  filteredTasks.forEach((task, index) => {
     const taskCard = document.createElement("div");
 
     taskCard.className = "task";
@@ -203,6 +227,12 @@ function loadTasks() {
     tasks.push(...JSON.parse(savedTasks));
   }
 }
+
+searchInput.addEventListener("input", function(){
+
+    displayTasks();
+
+});
 // Initial Load
 loadTasks();
 displayTasks();
