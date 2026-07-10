@@ -35,7 +35,33 @@
     </div>
 
     <div class="right-panel">
-        <h2>Tasks</h2><br>
+        
+<div class="task-header">
+
+    <h2>Your Tasks</h2>
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Search task..."
+    >
+</div>
+
+<div class="filters">
+
+    <button class="filter-btn active" data-filter="all">
+        All
+    </button>
+
+    <button class="filter-btn" data-filter="pending">
+        Pending
+    </button>
+
+    <button class="filter-btn" data-filter="completed">
+        Completed
+    </button>
+
+</div>
         
         <div id="taskContainer">
            
